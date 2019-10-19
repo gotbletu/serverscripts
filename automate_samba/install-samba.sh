@@ -5,6 +5,7 @@
 # DEMO:   https://youtu.be/HGO4lqh0LN8
 # REFF:   https://www.digitalocean.com/community/tutorials/how-to-set-up-a-samba-share-for-a-small-organization-on-ubuntu-16-04
 #         https://askubuntu.com/questions/88108/samba-share-read-only-for-guests-read-write-for-authenticated-users
+#         https://getsol.us/articles/software/samba/en/
 
 Color_Off='\e[0m'
 Black='\e[0;30m'
@@ -18,7 +19,7 @@ White='\e[0;37m'
 
 # install required packages
 find_pkm() { for i;do which "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }
-PKMGR=$(find_pkm apt aptitude apt-get dnf emerge pacman zypper)
+PKMGR=$(find_pkm apt aptitude apt-get dnf emerge pacman zypper eopkg)
 if [ "$PKMGR" = "apt" ]; then
   apt update
   apt install -y samba coreutils sed gawk
@@ -40,6 +41,9 @@ elif [ "$PKMGR" = "pacman" ]; then
 elif [ "$PKMGR" = "zypper" ]; then
   zypper refresh
   zypper install -y samba coreutils sed gawk
+elif [ "$PKMGR" = "eopkg" ]; then
+  eopkg up
+  eopkg it samba sed gawk coreutils
 fi
 
 printf "%s\n"
@@ -120,9 +124,11 @@ elif [ "$PKMGR" = "pacman" ]; then
   systemctl enable --now nmb.service smb.service
 elif [ "$PKMGR" = "zypper" ]; then
   systemctl enable --now nmb.service smb.service
+elif [ "$PKMGR" = "eopkg" ]; then
+  systemctl enable --now smb.service nmb.service
 fi
 
 printf "%s\n"
 
-MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d\/ -f1 | cut -d' ' -f2)"
-echo -e "${Yellow}>>>Server will be hosted at smb://$MY_IP or smb://$SERVERNAME${Color_Off}"
+MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d\/ -f1 | cut -d' ' -f2 | head -n 1)"
+echo -e "${Yellow}>>>Server will be hosted at ${Red}smb://$MY_IP ${Yellow}or ${Red}smb://$SERVERNAME${Color_Off}"
