@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# AUTHOR: gotbletu 
-# SOCIAL: gotbletu@gmail.com|https://github.com/gotbletu|https://www.youtube.com/user/gotbletu
+# AUTHOR: gotbletu <gotbletu@gmail.com>
+# SOCIAL: https://www.youtube.com/user/gotbletu|https://github.com/gotbletu|https://twitter.com/gotbletu
 # DESC:   easy samba server setup
 # DEMO:   https://youtu.be/HGO4lqh0LN8
 # REFF:   https://www.digitalocean.com/community/tutorials/how-to-set-up-a-samba-share-for-a-small-organization-on-ubuntu-16-04
