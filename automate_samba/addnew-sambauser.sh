@@ -66,7 +66,7 @@ smbpasswd -e "$USERNAME"
 
 # restart service
 find_pkm() { for i;do which "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }
-PKMGR=$(find_pkm apt aptitude apt-get dnf emerge pacman zypper)
+PKMGR=$(find_pkm apt aptitude apt-get dnf emerge pacman zypper eopkg)
 if [ "$PKMGR" = "apt" ]; then
   systemctl restart nmbd.service smbd.service
 elif [ "$PKMGR" = "apt-get" ]; then
