@@ -7,6 +7,14 @@
 #         https://askubuntu.com/questions/88108/samba-share-read-only-for-guests-read-write-for-authenticated-users
 #         https://getsol.us/articles/software/samba/en/
 
+
+# Check for sudo access
+
+if [ "$(id -u)" != "0" ]; then
+	echo "Sorry, you need to run this with sudo."
+	exit 1
+fi
+
 Color_Off='\e[0m'
 Black='\e[0;30m'
 Red='\e[0;31m'

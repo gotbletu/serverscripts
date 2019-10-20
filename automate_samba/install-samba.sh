@@ -7,6 +7,14 @@
 #         https://askubuntu.com/questions/88108/samba-share-read-only-for-guests-read-write-for-authenticated-users
 #         https://getsol.us/articles/software/samba/en/
 
+
+# Check for sudo access
+
+if [ "$(id -u)" != "0" ]; then
+	echo "Sorry, you need to run this with sudo."
+	exit 1
+fi
+
 Color_Off='\e[0m'
 Black='\e[0;30m'
 Red='\e[0;31m'
@@ -132,3 +140,4 @@ printf "%s\n"
 
 MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d\/ -f1 | cut -d' ' -f2 | head -n 1)"
 echo -e "${Yellow}>>>Server will be hosted at ${Red}smb://$MY_IP ${Yellow}or ${Red}smb://$SERVERNAME${Color_Off}"
+echo -e "${Purple}You might need to check your firewall/iptables configurations."
