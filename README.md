@@ -13,4 +13,17 @@ Automate Setup Server Services
     - `install-transmission.sh` will install and interactively configure transmission daemon on your machine.
     - You might need to configure firewall/iptables to allow torrent traffic.
     - Tested on Ubuntu, Archlinux.
-    - Video Demo: https://youtu.be/EN0ycEqg8Iw
+    - Video Demo: https://youtu.be/UIWhQNDfMIw
+
+
+                 _   _     _      _         
+      __ _  ___ | |_| |__ | | ___| |_ _   _ 
+     / _` |/ _ \| __| '_ \| |/ _ \ __| | | |
+    | (_| | (_) | |_| |_) | |  __/ |_| |_| |
+     \__, |\___/ \__|_.__/|_|\___|\__|\__,_|
+     |___/                                  
+
+- http://www.youtube.com/user/gotbletu
+- https://twitter.com/gotbletu
+- https://github.com/gotbletu
+- gotbletu@gmail.com

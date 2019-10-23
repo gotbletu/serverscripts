@@ -2,7 +2,7 @@
 # AUTHOR: gotbletu <gotbletu@gmail.com>
 # SOCIAL: https://www.youtube.com/user/gotbletu|https://github.com/gotbletu|https://twitter.com/gotbletu
 # DESC:   easy transmission server setup with webui login and ipblocklist
-# DEMO:   https://youtu.be/EN0ycEqg8Iw
+# DEMO:   https://youtu.be/UIWhQNDfMIw
 # REFF:   https://www.smarthomebeginner.com/install-transmission-web-interface-on-ubuntu-1204/
 #         https://linuxconfig.org/how-to-set-up-transmission-daemon-on-a-raspberry-pi-and-control-it-via-web-interface
 #         https://askubuntu.com/a/738118
