@@ -1,0 +1,10 @@
+[Unit]
+Description=kiwix offline wikipedia server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/sh -c '/usr/local/bin/kiwix-serve --port MYPORT MYSAVEDIR/*.zim'
+
+[Install]
+WantedBy=multi-user.target
