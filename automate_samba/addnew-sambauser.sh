@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # AUTHOR: gotbletu <gotbletu@gmail.com>
 # SOCIAL: https://www.youtube.com/user/gotbletu|https://github.com/gotbletu|https://twitter.com/gotbletu
-# DESC:   easy samba server setup
+# DESC:   easy add new samba normal user
 # DEMO:   https://youtu.be/HGO4lqh0LN8
 # CTR:    Abhinav Kulshreshtha (https://github.com/Abhinav1217)
 #         Damian Rath (https://github.com/damianrath)
@@ -25,14 +25,16 @@ Purple='\e[0;35m'
 Cyan='\e[0;36m'
 White='\e[0;37m'
 
-SMB_CONFIG="/etc/samba/smb.conf"
+echo -e "${Red}========== Add New Samba User ==========${Color_Off}"
+
+PATH_CONFIG="/etc/samba/smb.conf"
 
 echo -e "${Green}path of save directory? (e.g /media/data/samba, do not use home directory e.g /home/user/):${Color_Off}"
 echo -e "${Green}>>>Note<<< directory path will auto be created if path does not exist${Color_Off}"
 read -r -e SAVEDIR
 SAVEDIR=$(echo "$SAVEDIR" | sed 's/\/*$//g') # remove trailing slashes in path
 mkdir -p "$SAVEDIR"
-cat <<EOF | tee -a "$SMB_CONFIG" > /dev/null
+cat <<EOF | tee -a "$PATH_CONFIG" > /dev/null
 
 [MYUSERNAME]
   path = MYSAVEDIR/MYUSERNAME
@@ -43,7 +45,7 @@ cat <<EOF | tee -a "$SMB_CONFIG" > /dev/null
   valid users = MYUSERNAME @smbadmins
 
 EOF
-sed -i 's@MYSAVEDIR@'"$SAVEDIR"'@g' "$SMB_CONFIG"
+sed -i 's@MYSAVEDIR@'"$SAVEDIR"'@g' "$PATH_CONFIG"
 
 # create group has all users including guest users
 GROUPNAME=sambashare
@@ -55,7 +57,7 @@ GROUPNAME_USERS=smbusers
 # create normal user, add user to config, add user to groups, set inherit permissions, create samba password
 echo -e "${Green}create normal user (e.g thomas) [read/write access]:${Color_Off}"
 read -r USERNAME
-sed -i "s/MYUSERNAME/$USERNAME/g" "$SMB_CONFIG"
+sed -i "s/MYUSERNAME/$USERNAME/g" "$PATH_CONFIG"
 mkdir "$SAVEDIR/$USERNAME"
 useradd -d "$SAVEDIR/$USERNAME" -M -s /usr/sbin/nologin -G "$GROUPNAME","$GROUPNAME_USERS" "$USERNAME"
 chown "$USERNAME":"$GROUPNAME" "$SAVEDIR/$USERNAME"
@@ -65,7 +67,7 @@ smbpasswd -e "$USERNAME"
 
 # restart service
 find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }
-PKMGR=$(find_pkm apt apt-get aptitude dnf emerge eopkg pacman zypper)
+PKMGR=$(find_pkm apt aptitude apt-get dnf emerge pacman zypper eopkg)
 if [ "$PKMGR" = "apt" ]; then
   systemctl restart nmbd.service smbd.service
 elif [ "$PKMGR" = "apt-get" ]; then
@@ -84,7 +86,7 @@ elif [ "$PKMGR" = "zypper" ]; then
   systemctl restart nmb.service smb.service
 fi
 
-printf "\n"
+echo
 
 MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d'/' -f1 | cut -d' ' -f2 | head -n 1)"
 echo -e "${Yellow}>>>Server will be hosted at ${Red}smb://$MY_IP${Color_Off}"

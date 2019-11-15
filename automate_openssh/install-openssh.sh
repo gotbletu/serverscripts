@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 # AUTHOR: gotbletu <gotbletu@gmail.com>
 # SOCIAL: https://www.youtube.com/user/gotbletu|https://github.com/gotbletu|https://twitter.com/gotbletu
-# DESC:   easy setup kiwix server for offline wikipedia
-# DEMO:   https://youtu.be/1S6zUq2MwP0
-# REFF:   https://wiki.kiwix.org/wiki/Content_in_all_languages
-#         https://github.com/stardiviner/kiwix.el
+# DESC:   easy openssh server setup
+# DEMO:   https://youtu.be/fn8bDwfmM3c
 
 # check for sudo access
 if [ "$(id -u)" != "0" ]; then
@@ -22,10 +20,10 @@ Purple='\e[0;35m'
 Cyan='\e[0;36m'
 White='\e[0;37m'
 
-echo -ne "${Red}========== Kiwix ==========${Color_Off}"
+echo -ne "${Red}========== OpenSSH ==========${Color_Off}"
 echo -e "${White}
-Kiwix is an offline reader for online content like Wikipedia, Project Gutenberg, or TED Talks. It makes knowledge available to people with no or limited internet access. The software as well as the content is free to use for anyone.
-https://www.kiwix.org
+OpenSSH is the premier connectivity tool for remote login with the SSH protocol. It encrypts all traffic to eliminate eavesdropping, connection hijacking, and other attacks. In addition, OpenSSH provides a large suite of secure tunneling capabilities, several authentication methods, and sophisticated configuration options.
+https://www.openssh.com
 ${Color_Off}" | fold -s
 
 # auto detect default package manager
@@ -60,21 +58,21 @@ fi
 
 # install required packages
 if [ "$PKMGR" = "apt" ]; then
-  apt install -y coreutils curl gawk sed tar
+  apt install -y openssh-server coreutils sed gawk
 elif [ "$PKMGR" = "apt-get" ]; then
-  apt-get install --no-install-recommends -y coreutils curl gawk sed tar
+  apt-get install --no-install-recommends -y openssh-server coreutils sed gawk
 elif [ "$PKMGR" = "aptitude" ]; then
-  aptitude install --without-recommends -y coreutils curl gawk sed tar
+  aptitude install --without-recommends -y openssh-server coreutils sed gawk
 elif [ "$PKMGR" = "dnf" ]; then
-  dnf install -y coreutils curl gawk sed tar
+  dnf install -y openssh-server coreutils sed gawk
 elif [ "$PKMGR" = "emerge" ]; then
-  emerge coreutils curl gawk sed tar
+  emerge openssh coreutils sed gawk
 elif [ "$PKMGR" = "eopkg" ]; then
-  eopkg install coreutils curl gawk sed tar
+  eopkg install openssh-server coreutils sed gawk
 elif [ "$PKMGR" = "pacman" ]; then
-  pacman --noconfirm -S coreutils curl gawk sed tar
+  pacman --noconfirm -S openssh coreutils sed gawk
 elif [ "$PKMGR" = "zypper" ]; then
-  zypper install -y coreutils curl gawk sed tar
+  zypper install -y openssh coreutils sed gawk
 else
   echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
   exit 1
@@ -82,35 +80,11 @@ fi
 
 echo
 
-# manual install
-PACKAGE_URL="https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-x86_64.tar.gz"
-curl -kL "$PACKAGE_URL" | tar -xz && mv kiwix-tools*/kiwix-serve /usr/local/bin && rm -r kiwix-tools*
-chown root:root /usr/local/bin/kiwix-serve
-
-echo
-
-SERVICE_FILE="/etc/systemd/system/kiwix-serve.service"
-cp kiwix-serve.service "$SERVICE_FILE"
-
-echo -e "${Green}create save directory (e.g /media/data/kiwix, do not use home directory e.g /home/user/):${Color_Off}"
-echo -e "${Green}>>>Note<<< directory path will auto be created if path does not exist${Color_Off}"
-read -r -e SAVEDIR
-SAVEDIR=$(echo "$SAVEDIR" | sed 's/\/*$//g') # remove trailing slashes in path
-mkdir -p "$SAVEDIR"
-sed -i 's@MYSAVEDIR@'"$SAVEDIR"'@g' "$SERVICE_FILE"
-
-# copy sample zim file
-cp ./*.zim "$SAVEDIR"
-
-# set port
-PORT=49849
-sed -i 's@MYPORT@'"$PORT"'@g' "$SERVICE_FILE"
-
 # enable services on boot
-systemctl enable --now kiwix-serve.service
+systemctl enable --now sshd.service
 
 echo
 
 MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d'/' -f1 | cut -d' ' -f2 | head -n 1)"
-echo -e "${Yellow}>>>Server will be hosted at ${Red}http://$MY_IP:$PORT${Color_Off}"
+echo -e "${Yellow}>>>Usage: ${Red}ssh username@$MY_IP:22${Color_Off}"
 echo -e "${Purple}You might need to check your firewall/iptables configurations.${Color_Off}"
