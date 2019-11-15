@@ -1,6 +1,10 @@
 # serverscripts
 Automate Setup Server Services
 
+### usage
+        chmod +x serverscripts.sh
+        ./serverscripts.sh
+
 ### Table Of Content
 ====================
 * [automate_kiwix](/automate_kiwix) - offline wikipedia server
