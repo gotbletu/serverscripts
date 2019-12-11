@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # AUTHOR: gotbletu <gotbletu@gmail.com>
 # SOCIAL: https://www.youtube.com/user/gotbletu|https://github.com/gotbletu|https://twitter.com/gotbletu
-# DESC:   easy openssh server setup
-# DEMO:   https://youtu.be/fn8bDwfmM3c
+# DESC:   easy samba server setup
+# DEMO:   https://youtu.be/HGO4lqh0LN8
+# REFF:   https://docs.syncthing.net/users/faq.html#how-do-i-access-the-web-gui-from-another-computer
 
 # check for sudo access
 if [ "$(id -u)" != "0" ]; then
@@ -20,11 +21,11 @@ Purple='\e[0;35m'
 Cyan='\e[0;36m'
 White='\e[0;37m'
 
-__desc="${Red}========== OpenSSH ==========${Color_Off}
-OpenSSH is the premier connectivity tool for remote login with the SSH protocol.
-It encrypts all traffic to eliminate eavesdropping, connection hijacking, and other attacks.
-In addition, OpenSSH provides a large suite of secure tunneling capabilities, several authentication methods, and sophisticated configuration options.
-https://www.openssh.com
+__desc="${Red}========== Torsocks ==========${Color_Off}
+Torsocks allows you to use most applications in a safe way with Tor.
+It ensures that DNS requests are handled safely and explicitly rejects any traffic other than TCP from the application you're using.
+https://www.torproject.org
+https://gitweb.torproject.org/torsocks.git
 "
 echo -e "$__desc" | fold -s
 
@@ -60,21 +61,21 @@ fi
 
 # install required packages
 if [ "$PKMGR" = "apt" ]; then
-  apt install -y openssh-server coreutils sed gawk
+  apt install -y torsocks coreutils sed gawk
 elif [ "$PKMGR" = "apt-get" ]; then
-  apt-get install --no-install-recommends -y openssh-server coreutils sed gawk
+  apt-get install --no-install-recommends -y torsocks coreutils sed gawk
 elif [ "$PKMGR" = "aptitude" ]; then
-  aptitude install --without-recommends -y openssh-server coreutils sed gawk
+  aptitude install --without-recommends -y torsocks coreutils sed gawk
 elif [ "$PKMGR" = "dnf" ]; then
-  dnf install -y openssh-server coreutils sed gawk
+  dnf install -y torsocks coreutils sed gawk
 elif [ "$PKMGR" = "emerge" ]; then
-  emerge openssh coreutils sed gawk
+  emerge torsocks coreutils sed gawk
 elif [ "$PKMGR" = "eopkg" ]; then
-  eopkg install openssh-server coreutils sed gawk
+  eopkg install torsocks coreutils sed gawk
 elif [ "$PKMGR" = "pacman" ]; then
-  pacman --noconfirm -S openssh coreutils sed gawk
+  pacman --noconfirm -S torsocks coreutils sed gawk
 elif [ "$PKMGR" = "zypper" ]; then
-  zypper install -y openssh coreutils sed gawk
+  zypper install -y torsocks coreutils sed gawk
 else
   echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
   exit 1
@@ -82,11 +83,16 @@ fi
 
 echo
 
+# enable torsocks port and cookies
+PATH_CONFIG="/etc/tor/torrc"
+sed -i 's:#ControlPort*:ControlPort 9051:g' "$PATH_CONFIG"
+sed -i 's:#CookieAuthentication*:CookieAuthentication 0:g' "$PATH_CONFIG"
+
 # enable services on boot
-systemctl enable --now sshd.service
+systemctl enable --now tor.service
 
 echo
 
-MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d'/' -f1 | cut -d' ' -f2 | head -n 1)"
-echo -e "${Yellow}>>>Usage: ${Red}ssh username@$MY_IP:22${Color_Off}"
+echo -e "${Yellow}>>>Usage: ${Red}torsocks wget ...; torsocks curl ...; torsocks apt install ...; ...etc${Color_Off}"
+echo -e "${Yellow}>>>Check Tor Status: ${Red}torsocks w3m 'https://check.torproject.org'${Color_Off}"
 echo -e "${Purple}You might need to check your firewall/iptables configurations.${Color_Off}"

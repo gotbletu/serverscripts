@@ -23,15 +23,18 @@ MAIN_MENU="
   ${Green}2a${Color_Off}  -- Add New Samba User
   ${Green}3${Color_Off}   Setup Transmission (Bit Torrent) [9091]
   ${Green}4${Color_Off}   Setup Kiwix (Offline Wikipedia) [49849]
+  ${Green}5${Color_Off}   Setup Syncthing (File Syncing) [8384]
+  ${Green}6${Color_Off}   ${Cyan}Setup Syncthing (Desktop Only)${Color_Off}
+  ${Green}7${Color_Off}   Setup Ubooquity (Comic & Ebook Server)
+  ${Green}8${Color_Off}   Setup Torsocks (Access Tor Network via CLI)
   ${Green}i${Color_Off}   Show IP Address
   ${Green}r${Color_Off}   Refresh Repository
   ${Green}a${Color_Off}   About
   ${Green}q${Color_Off}   Quit
 "
-  # ${Green}5${Color_Off}   Setup Syncthing (File Syncing)
-  # ${Green}6${Color_Off}   Setup Ubooquity (Comic & Ebook Server)
-  # ${Green}7${Color_Off}   Setup Torsocks (Access Tor Network via CLI)
+# ,${Green}6${Color_Off}, Setup Daily Snapshot (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup FTP (P2P File Syncing Server)
+# ,${Green}6${Color_Off}, Setup Fgallery (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Flexget (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup NFS (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Calibre (P2P File Syncing Server)
@@ -111,16 +114,22 @@ while true; do
     5) # setup syncthing
       clear
       cd "$MAIN_DIR" || exit
-      cd automate_syncthing && chmod +x install-syncthing.sh && sudo ./install-syncthing.sh
+      cd automate_syncthing && chmod +x install-syncthing-server.sh && sudo ./install-syncthing-server.sh
       read -rsp $'Press any key to return to main menu\n' -n1
     ;;
-    6) # setup ubooquity
+    6) # setup syncthing for desktop user only
+      clear
+      cd "$MAIN_DIR" || exit
+      cd automate_syncthing && chmod +x install-syncthing-desktop.sh && ./install-syncthing-desktop.sh
+      read -rsp $'Press any key to return to main menu\n' -n1
+    ;;
+    7) # setup ubooquity
       clear
       cd "$MAIN_DIR" || exit
       cd automate_ubooquity && chmod +x install-ubooquity.sh && sudo ./install-ubooquity.sh
       read -rsp $'Press any key to return to main menu\n' -n1
     ;;
-    7) # setup torsocks
+    8) # setup torsocks
       clear
       cd "$MAIN_DIR" || exit
       cd automate_torsocks && chmod +x install-torsocks.sh && sudo ./install-torsocks.sh

@@ -25,11 +25,13 @@ Purple='\e[0;35m'
 Cyan='\e[0;36m'
 White='\e[0;37m'
 
-echo -ne "${Red}========== Samba ==========${Color_Off}"
-echo -e "${White}
-Samba is a free software re-implementation of the SMB networking protocol. Samba provides file and print services for various Microsoft Windows clients and can integrate with a Microsoft Windows Server domain, either as a Domain Controller (DC) or as a domain member. As of version 4, it supports Active Directory and Microsoft Windows NT domains.
+__desc="${Red}========== Samba ==========${Color_Off}
+Samba is a free software re-implementation of the SMB networking protocol.
+Samba provides file and print services for various Microsoft Windows clients and can integrate with a Microsoft Windows Server domain, either as a Domain Controller (DC) or as a domain member.
+As of version 4, it supports Active Directory and Microsoft Windows NT domains.
 https://www.samba.org
-${Color_Off}" | fold -s
+"
+echo -e "$__desc" | fold -s
 
 # auto detect default package manager
 find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }

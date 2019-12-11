@@ -22,11 +22,13 @@ Purple='\e[0;35m'
 Cyan='\e[0;36m'
 White='\e[0;37m'
 
-echo -ne "${Red}========== Kiwix ==========${Color_Off}"
-echo -e "${White}
-Kiwix is an offline reader for online content like Wikipedia, Project Gutenberg, or TED Talks. It makes knowledge available to people with no or limited internet access. The software as well as the content is free to use for anyone.
+__desc="${Red}========== Kiwix ==========${Color_Off}
+Kiwix is an offline reader for online content like Wikipedia, Project Gutenberg, or TED Talks.
+It makes knowledge available to people with no or limited internet access.
+The software as well as the content is free to use for anyone.
 https://www.kiwix.org
-${Color_Off}" | fold -s
+"
+echo -e "$__desc" | fold -s
 
 # auto detect default package manager
 find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }

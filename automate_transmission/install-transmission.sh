@@ -24,11 +24,11 @@ Purple='\e[0;35m'
 Cyan='\e[0;36m'
 White='\e[0;37m'
 
-echo -ne "${Red}========== Transmission ==========${Color_Off}"
-echo -e "${White}
+__desc="${Red}========== Transmission ==========${Color_Off}
 Transmission is a BitTorrent client which features a variety of user interfaces on top of a cross-platform back-end. Transmission is free software licensed under the terms of the GNU General Public License, with parts under the MIT License.
 https://transmissionbt.com
-${Color_Off}" | fold -s
+"
+echo -e "$__desc" | fold -s
 
 # auto detect default package manager
 find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }

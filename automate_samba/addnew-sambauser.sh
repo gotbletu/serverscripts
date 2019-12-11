@@ -25,7 +25,12 @@ Purple='\e[0;35m'
 Cyan='\e[0;36m'
 White='\e[0;37m'
 
-echo -e "${Red}========== Add New Samba User ==========${Color_Off}"
+__desc="${Red}========== Add New Samba User ==========${Color_Off}
+Adding A Normal Samba User To The Existing Samba Share Group
+https://www.samba.org
+"
+echo -e "$__desc" | fold -s
+
 
 PATH_CONFIG="/etc/samba/smb.conf"
 

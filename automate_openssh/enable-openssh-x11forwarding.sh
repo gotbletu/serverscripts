@@ -4,6 +4,12 @@
 # DESC:   easy enable openssh X11 forwarding
 # DEMO:   https://youtu.be/fn8bDwfmM3c
 
+# check for sudo access
+if [ "$(id -u)" != "0" ]; then
+  echo "Sorry, you need to run this with sudo."
+  exit 1
+fi
+
 Color_Off='\e[0m'
 Black='\e[0;30m'
 Red='\e[0;31m'
@@ -14,11 +20,11 @@ Purple='\e[0;35m'
 Cyan='\e[0;36m'
 White='\e[0;37m'
 
-echo -ne "${Red}========== Enable OpenSSH X11 Forwarding ==========${Color_Off}"
-echo -e "${White}
+__desc="${Red}========== Enable OpenSSH X11 Forwarding ==========${Color_Off}
 X11 forwarding is a mechanism that allows a user to start up remote graphical applications but forward the graphical application display to your local machine.
 https://www.openssh.com
-${Color_Off}" | fold -s
+"
+echo -e "$__desc" | fold -s
 
 echo -ne "${Yellow}Enable X11 Forwarding? [y/n] ${Color_Off}"
 read -r REPLY
