@@ -1,28 +1,24 @@
 # serverscripts
-Automate Setup Server Services
+Automate Setup Server Services Using a Simple Menu
+- The lazy way to setup common server services
+- Tested on Debian & Arch Linux base system but it should work on other popular distros also
+- Try it on a Virtual Machine before doing it for real
 
 ### usage
-        chmod +x serverscripts.sh
-        ./serverscripts.sh
+    chmod +x serverscripts.sh
+    ./serverscripts.sh
 
 ### Table Of Content
 ====================
-* [automate_kiwix](/automate_kiwix) - offline wikipedia server
-    - `install-kiwix.sh` will install and interactively configure kiwix on your machine.
-    - You might need to configure firewall/iptables to allow kiwix traffic.
-    - Tested on Ubuntu-base, Archlinux-base.
-    - Video Demo: https://youtu.be/1S6zUq2MwP0
-* [automate_samba](/automate_samba) - file server with account password protection
-    - `install-samba.sh` will install and interactively configure samba on your machine.
-    - `addnew-sambauser.sh` will configure a new user on your samba server.
-    - You might need to configure firewall/iptables to allow samba traffic.
-    - Tested on Fedora, Ubuntu, Archlinux, Solus, Manjaro.
-    - Video Demo: https://youtu.be/HGO4lqh0LN8
-* [automate_transmission](/automate_transmission) - bit torrent server
-    - `install-transmission.sh` will install and interactively configure transmission daemon on your machine.
-    - You might need to configure firewall/iptables to allow torrent traffic.
-    - Tested on Ubuntu-base, Archlinux-base.
-    - Video Demo: https://youtu.be/UIWhQNDfMIw
+* __Calibre__ - Ebook Manager and Server (Requires X Session for inital Setup Wizard)
+* __Kiwix__ - Offline Wikipedia
+* __OpenSSH__ - Remote Login (X Forwarding, Disable Login, Passwordless Login)
+* __Samba__ - File Sever (With Guest, Normal and Admin Account)
+* __Syncthing__ - File Syncing (For Server and Normal Desktop User)
+* __Torsocks__ - Access the TOR Network
+* __Transmission__ - BitTorrent 
+* __Ubooquity__ - Ebook Server
+* __UFW__ - Firewall
 
 #### contact
                  _   _     _      _
@@ -33,6 +29,7 @@ Automate Setup Server Services
      |___/
 
 - http://www.youtube.com/user/gotbletu
+- https://lbry.tv/@gotbletu
 - https://twitter.com/gotbletu
 - https://github.com/gotbletu
 - gotbletu@gmail.com
