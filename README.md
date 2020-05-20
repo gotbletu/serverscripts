@@ -10,7 +10,7 @@ Automate Setup Server Services Using a Simple Menu
 
 ### Table Of Content
 ====================
-* __Calibre__ - Ebook Manager and Server (Requires X Session for inital Setup Wizard)
+* __Calibre__ - Ebook Manager and Server (Requires X Session for initial Setup Wizard)
 * __Kiwix__ - Offline Wikipedia
 * __OpenSSH__ - Remote Login (X Forwarding, Disable Login, Passwordless Login)
 * __Samba__ - File Sever (With Guest, Normal and Admin Account)
