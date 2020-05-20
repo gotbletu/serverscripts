@@ -17,7 +17,7 @@ printf "%b\n" "$__desc" | fold -s
 
 printf "%b\n" "${Green}enter your remote server address (e.g username@192.168.1.122):${Color_Off}"
 read -rp "Remote Server: " REMOTE_SERVER
-IP_ADDR=$(printf "%s" "$REMOTE_SERVER" | cut -d '@' -f1 | cut -d ':' -f1)
+IP_ADDR=$(printf "%s" "$REMOTE_SERVER" | cut -d '@' -f2 | cut -d ':' -f1)
 printf "\n"
 
 printf "%b\n" "${Green}removes all keys belonging to the specified hostname/ipaddress${Color_Off}"
