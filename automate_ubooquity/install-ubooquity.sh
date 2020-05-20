@@ -3,21 +3,12 @@
 # DESC: [archlinux] simi autoinstaller to setup transmission-daemon with webui and ipblocklist support
 # DEMO:
 
-# check for sudo access
-if [ "$(id -u)" != "0" ]; then
-  echo "Sorry, you need to run this with sudo."
-  exit 1
-fi
+# requires root
+[ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
 
 Color_Off='\e[0m'
-Black='\e[0;30m'
 Red='\e[0;31m'
-Green='\e[0;32m'
 Yellow='\e[0;33m'
-Blue='\e[0;34m'
-Purple='\e[0;35m'
-Cyan='\e[0;36m'
-White='\e[0;37m'
 
 __desc="${Red}========== Ubooquity ==========${Color_Off}
 Ubooquity is small content server that you can use on any device on which Java is installed.
@@ -26,14 +17,14 @@ The idea behind Ubooquity is to be able to browse your personal digital library 
 Ubooquity is free for non-commercial use.
 https://vaemendis.net/ubooquity/static12/license
 "
-echo -e "$__desc" | fold -s
+printf "%b\n" "$__desc" | fold -s
 
 # auto detect default package manager
-find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }
+find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { printf "%s" "$i"; return 0;};done;return 1; }
 PKMGR=$(find_pkm apt apt-get aptitude dnf emerge eopkg pacman zypper)
 
 # ask to refresh repo
-echo -ne "${Yellow}Do you want to refresh system repository? [y/n] ${Color_Off}"
+printf "%b" "${Yellow}Do you want to refresh system repository? [y/n] ${Color_Off}"
 read -r REPLY
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   if [ "$PKMGR" = "apt" ]; then
@@ -53,34 +44,34 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   elif [ "$PKMGR" = "zypper" ]; then
     zypper refresh
   else
-    echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
+    printf "%b\n" "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
     exit 1
   fi
 fi
 
 # install required packages
 if [ "$PKMGR" = "apt" ]; then
-  apt install -y openjdk-8-jre-headless curl unzip coreutils sed gawk
+  apt install -y openjdk-8-jre-headless wget unzip coreutils gawk
 elif [ "$PKMGR" = "apt-get" ]; then
-  apt-get install --no-install-recommends -y openjdk-8-jre-headless curl unzip coreutils sed gawk
+  apt-get install --no-install-recommends -y openjdk-8-jre-headless wget unzip coreutils gawk
 elif [ "$PKMGR" = "aptitude" ]; then
-  aptitude install --without-recommends -y openjdk-8-jre-headless curl unzip coreutils sed gawk
+  aptitude install --without-recommends -y openjdk-8-jre-headless wget unzip coreutils gawk
 elif [ "$PKMGR" = "dnf" ]; then
-  dnf install -y java-1.8.0-openjdk-headless curl unzip coreutils sed gawk
+  dnf install -y java-1.8.0-openjdk-headless wget unzip coreutils gawk
 elif [ "$PKMGR" = "emerge" ]; then
-  emerge openjdk-8-jre-headless curl unzip coreutils sed gawk
+  emerge openjdk-8-jre-headless wget unzip coreutils gawk
 elif [ "$PKMGR" = "eopkg" ]; then
-  eopkg install openjdk-8 curl unzip coreutils sed gawk
+  eopkg install openjdk-8 wget unzip coreutils gawk
 elif [ "$PKMGR" = "pacman" ]; then
-  pacman --noconfirm -S jre8-openjdk-headless curl unzip coreutils sed gawk
+  pacman --noconfirm -S jre8-openjdk-headless wget unzip coreutils gawk
 elif [ "$PKMGR" = "zypper" ]; then
-  zypper install -y java-1_8_0-openjdk-headless curl unzip coreutils sed gawk
+  zypper install -y java-1_8_0-openjdk-headless wget unzip coreutils gawk
 else
-  echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
+  printf "%b\n" "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
   exit 1
 fi
 
-echo
+printf "\n"
 
 # copy service file
 SERVICE_FILE="/etc/systemd/system/ubooquity.service"
@@ -98,13 +89,14 @@ chown "$USERNAME":"$GROUPNAME" "$HOMEDIR"
 
 # manual install
 PACKAGE_URL="http://vaemendis.net/ubooquity/service/download.php"
-curl -kL "$PACKAGE_URL" | unzip && mv Ubooquity.jar "$HOMEDIR" && rm download.php
+wget -c "$PACKAGE_URL" -O Ubooquity.zip
+unzip Ubooquity.zip && mv Ubooquity.jar "$HOMEDIR"
 
 # enable services on boot
 systemctl enable --now ubooquity.service
 
-echo
+printf "\n"
 
 MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d'/' -f1 | cut -d' ' -f2 | head -n 1)"
-echo -e "${Yellow}>>>Initial Admin Account Setup Require for Ubooquity ${Red}http://$MY_IP:2203/admin${Color_Off}"
-echo -e "${Yellow}>>>Server will be hosted at ${Red}http://$MY_IP:2202${Color_Off}"
+printf "%b\n" "${Yellow}>>>Initial Admin Account Setup Require for Ubooquity ${Red}http://$MY_IP:2203/admin${Color_Off}"
+printf "%b\n" "${Yellow}>>>Server will be hosted at ${Red}http://$MY_IP:2202${Color_Off}"

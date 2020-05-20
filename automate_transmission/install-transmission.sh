@@ -8,34 +8,28 @@
 #         https://askubuntu.com/a/738118
 #         https://www.linuxtrainingacademy.com/all-umasks/
 
-# check for sudo access
-if [ "$(id -u)" != "0" ]; then
-  echo "Sorry, you need to run this with sudo."
-  exit 1
-fi
+# requires root
+[ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
 
 Color_Off='\e[0m'
-Black='\e[0;30m'
 Red='\e[0;31m'
 Green='\e[0;32m'
 Yellow='\e[0;33m'
-Blue='\e[0;34m'
 Purple='\e[0;35m'
 Cyan='\e[0;36m'
-White='\e[0;37m'
 
 __desc="${Red}========== Transmission ==========${Color_Off}
 Transmission is a BitTorrent client which features a variety of user interfaces on top of a cross-platform back-end. Transmission is free software licensed under the terms of the GNU General Public License, with parts under the MIT License.
 https://transmissionbt.com
 "
-echo -e "$__desc" | fold -s
+printf "%b\n" "$__desc" | fold -s
 
 # auto detect default package manager
-find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }
+find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { printf "%s" "$i"; return 0;};done;return 1; }
 PKMGR=$(find_pkm apt apt-get aptitude dnf emerge eopkg pacman zypper)
 
 # ask to refresh repo
-echo -ne "${Yellow}Do you want to refresh system repository? [y/n] ${Color_Off}"
+printf "%b" "${Yellow}Do you want to refresh system repository? [y/n] ${Color_Off}"
 read -r REPLY
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   if [ "$PKMGR" = "apt" ]; then
@@ -55,7 +49,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   elif [ "$PKMGR" = "zypper" ]; then
     zypper refresh
   else
-    echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
+    printf "%b\n" "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
     exit 1
   fi
 fi
@@ -118,25 +112,25 @@ elif [ "$PKMGR" = "zypper" ]; then
   systemctl start transmission-daemon.service
   systemctl stop transmission-daemon.service
 else
-  echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
+  printf "%b\n" "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
   exit 1
 fi
 
-echo
+printf "\n"
 
 # copy settings
 cp settings.json "$PATH_CONFIG"
 
 # create torrent directory
-echo -e "${Green}create save directory (e.g /media/data/transmission, do not use home directory e.g /home/user/):${Color_Off}"
-echo -e "${Green}>>>Note<<< directory path will auto be created if path does not exist${Color_Off}"
-read -r -e SAVEDIR
-SAVEDIR=$(echo "$SAVEDIR" | sed 's/\/*$//g') # remove trailing slashes in path
+printf "%b\n" "${Green}create save directory (e.g /media/data/transmission, do not use home directory /home/user/):${Color_Off}"
+printf "%b\n" "${Green}>>>Note<<< directory path will auto be created if path does not exist${Color_Off}"
+read -rep "Save Directory: " SAVEDIR
+SAVEDIR=$(printf "%s" "$SAVEDIR" | sed 's/\/*$//g') # remove trailing slashes in path
 mkdir -vp "$SAVEDIR"/{completed,incomplete,watchdir}
 sed -i 's@MYSAVEDIR@'"$SAVEDIR"'@g' "$PATH_CONFIG"
 
 # chart for umask and chmod permissions
-echo -e "${Cyan}
+printf "%b\n" "${Cyan}
 
     Umask   File Permission    Directory Permission
     -----------------------------------------------
@@ -150,26 +144,28 @@ echo -e "${Cyan}
 
 ${Color_Off}"
 
-echo -e "${Green}set save directory permission (e.g 777):${Color_Off}"
-echo -e "${Green}>>>Note<<< add users to ${Red}${GROUPNAME}${Green} group if you need${Color_Off}"
-read -r DIR_PERM
+printf "%b\n" "${Green}set save directory permission (e.g 777):${Color_Off}"
+printf "%b\n" "${Green}>>>Note<<< add users to ${Red}${GROUPNAME}${Green} group if you need${Color_Off}"
+read -rp "DIR Permission: " DIR_PERM
 chmod -R "$DIR_PERM" "$SAVEDIR"
+printf "\n"
 
-echo -e "${Green}set umask permission for incoming torrent creation (e.g 000):${Color_Off}"
-read -r UMASK_PERM
+printf "%b\n" "${Green}set umask permission for incoming torrent creation (e.g 000):${Color_Off}"
+read -rp "UMASK Permission: " UMASK_PERM
 UMASK_PERM="$((8#$UMASK_PERM))"
 sed -i "s/MYUMASK_PERM/$UMASK_PERM/g" "$PATH_CONFIG"
+printf "\n"
 
 # create user and password for webui
-echo -e "${Green}create username for the webui (e.g godmode):${Color_Off}"
-read -r USERNAME
-sed -i "s/MYUSERNAME/$USERNAME/g" "$PATH_CONFIG"
+printf "%b\n" "${Green}create username for the webui (e.g godmode):${Color_Off}"
+read -rp "New username: " USER_NAME
+sed -i "s/MYUSERNAME/$USER_NAME/g" "$PATH_CONFIG"
+printf "\n"
 
-echo -e "${Green}create password for the webui:${Color_Off}"
+printf "%b\n" "${Green}create password for the webui:${Color_Off}"
 read -rsp "New password: " PASSWORD
 sed -i "s/MYPASSWORD/$PASSWORD/g" "$PATH_CONFIG"
-
-echo
+printf "\n"
 
 # change group
 chgrp -R "$GROUPNAME" "$SAVEDIR"
@@ -177,8 +173,8 @@ chgrp -R "$GROUPNAME" "$SAVEDIR"
 # enable service on boot
 systemctl enable --now "$SERVICE_NAME"
 
-echo
+printf "\n"
 
 MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d'/' -f1 | cut -d' ' -f2 | head -n 1)"
-echo -e "${Yellow}>>>Server will be hosted at ${Red}http://$MY_IP:9091${Color_Off}"
-echo -e "${Purple}>>>Extra<<< Update IP Blocklist from the WEBUI and add rules to firewall/iptables if needed${Color_Off}"
+printf "%b\n" "${Yellow}>>>Server will be hosted at ${Red}http://$MY_IP:9091${Color_Off}"
+printf "%b\n" "${Purple}>>>Extra<<< WEBUI > Edit Preferences > Peers > Blocklist > Update ${Color_Off}"

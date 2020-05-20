@@ -5,21 +5,15 @@
 # DEMO:   https://youtu.be/HGO4lqh0LN8
 # REFF:   https://docs.syncthing.net/users/faq.html#how-do-i-access-the-web-gui-from-another-computer
 
-# check for sudo access
-if [ "$(id -u)" != "0" ]; then
-  echo "Sorry, you need to run this with sudo."
-  exit 1
-fi
+# requires root
+[ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
 
 Color_Off='\e[0m'
-Black='\e[0;30m'
 Red='\e[0;31m'
 Green='\e[0;32m'
 Yellow='\e[0;33m'
-Blue='\e[0;34m'
 Purple='\e[0;35m'
 Cyan='\e[0;36m'
-White='\e[0;37m'
 
 __desc="${Red}========== Syncthing ==========${Color_Off}
 Syncthing is a continuous file synchronization program.
@@ -27,14 +21,14 @@ It synchronizes files between two or more computers and replaces proprietary syn
 Your data is your data alone and you deserve to choose where it is stored, if it is shared with some third party and how it's transmitted over the internet.
 https://syncthing.net
 "
-echo -e "$__desc" | fold -s
+printf "%b\n" "$__desc" | fold -s
 
 # auto detect default package manager
-find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }
+find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { printf "%s" "$i"; return 0;};done;return 1; }
 PKMGR=$(find_pkm apt apt-get aptitude dnf emerge eopkg pacman zypper)
 
 # ask to refresh repo
-echo -ne "${Yellow}Do you want to refresh system repository? [y/n] ${Color_Off}"
+printf "%b" "${Yellow}Do you want to refresh system repository? [y/n] ${Color_Off}"
 read -r REPLY
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   if [ "$PKMGR" = "apt" ]; then
@@ -54,7 +48,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   elif [ "$PKMGR" = "zypper" ]; then
     zypper refresh
   else
-    echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
+    printf "%b\n" "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
     exit 1
   fi
 fi
@@ -77,16 +71,16 @@ elif [ "$PKMGR" = "pacman" ]; then
 elif [ "$PKMGR" = "zypper" ]; then
   zypper install -y syncthing coreutils sed gawk
 else
-  echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
+  printf "%b\n" "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
   exit 1
 fi
 
-echo
+printf "\n"
 
-echo -e "${Green}create save directory (e.g /media/data/syncthing, do not use home directory e.g /home/user/):${Color_Off}"
-echo -e "${Green}>>>Note<<< directory path will auto be created if path does not exist${Color_Off}"
-read -r -e SAVEDIR
-SAVEDIR=$(echo "$SAVEDIR" | sed 's/\/*$//g') # remove trailing slashes in path
+printf "%b\n" "${Green}create save directory (e.g /media/data/syncthing, do not use home directory e.g /home/user/):${Color_Off}"
+printf "%b\n" "${Green}>>>Note<<< directory path will auto be created if path does not exist${Color_Off}"
+read -rep "Save Directory: " SAVEDIR
+SAVEDIR=$(printf "%s" "$SAVEDIR" | sed 's/\/*$//g') # remove trailing slashes in path
 mkdir -p "$SAVEDIR"
 
 # create home directory/user/group
@@ -103,7 +97,7 @@ chown "$USERNAME":"$GROUPNAME" "$HOMEDIR"
 systemctl start syncthing@"$USERNAME".service
 
 # chmod permissions
-echo -e "${Cyan}
+printf "%b\n" "${Cyan}
 
   Directory Permission
   --------------------
@@ -121,9 +115,9 @@ echo -e "${Cyan}
 
 ${Color_Off}"
 
-echo -e "${Green}set save directory permission (e.g 770):${Color_Off}"
-echo -e "${Green}>>>Note<<< add users to ${Red}${GROUPNAME}${Green} group if you need${Color_Off}"
-read -r DIR_PERM
+printf "%b\n" "${Green}set save directory permission (e.g 770):${Color_Off}"
+printf "%b\n" "${Green}>>>Note<<< add users to ${Red}${GROUPNAME}${Green} group if you need${Color_Off}"
+read -rp "DIR Permission: " DIR_PERM
 chmod -R "$DIR_PERM" "$SAVEDIR"
 chgrp -R "$GROUPNAME" "$SAVEDIR"
 
@@ -138,9 +132,9 @@ sed -i 's@~@'"$SAVEDIR"'@g' "$PATH_CONFIG"
 # enable services on boot
 systemctl enable --now syncthing@"$USERNAME".service
 
-echo
+printf "\n"
 
 MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d'/' -f1 | cut -d' ' -f2 | head -n 1)"
-echo -e "${Yellow}>>>Server will be hosted at ${Red}http://$MY_IP:8384${Color_Off}"
-echo -e "${Red}>>>Setup WebUI Login: WebUI > Actions > Settings > GUI > GUI Authentication. Then Actions > Restart${Color_Off}"
-echo -e "${Purple}You might need to check your firewall/iptables configurations.${Color_Off}"
+printf "%b\n" "${Yellow}>>>Server will be hosted at ${Red}http://$MY_IP:8384${Color_Off}"
+printf "%b\n" "${Red}>>>Setup WebUI Login: WebUI > Actions > Settings > GUI > GUI Authentication. Then Actions > Restart${Color_Off}"
+printf "%b\n" "${Purple}You might need to check your firewall/iptables configurations.${Color_Off}"

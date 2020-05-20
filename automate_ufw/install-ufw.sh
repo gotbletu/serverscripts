@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # AUTHOR: gotbletu <gotbletu@gmail.com>
 # SOCIAL: https://www.youtube.com/user/gotbletu|https://github.com/gotbletu|https://twitter.com/gotbletu
-# DESC:   easy samba server setup
-# DEMO:   https://youtu.be/HGO4lqh0LN8
-# REFF:   https://docs.syncthing.net/users/faq.html#how-do-i-access-the-web-gui-from-another-computer
+# REFF:   https://www.linode.com/docs/security/firewalls/configure-firewall-with-ufw/
 
 # requires root
 [ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
@@ -11,13 +9,10 @@
 Color_Off='\e[0m'
 Red='\e[0;31m'
 Yellow='\e[0;33m'
-Purple='\e[0;35m'
 
-__desc="${Red}========== Torsocks ==========${Color_Off}
-Torsocks allows you to use most applications in a safe way with Tor.
-It ensures that DNS requests are handled safely and explicitly rejects any traffic other than TCP from the application you're using.
-https://www.torproject.org
-https://gitweb.torproject.org/torsocks.git
+__desc="${Red}========== UFW Uncomplicated Firewall ==========${Color_Off}
+Uncomplicated Firewall (UFW) is a program for managing a netfilter firewall designed to be easy to use. It uses a command-line interface consisting of a small number of simple commands, and uses iptables for configuration.
+https://launchpad.net/ufw
 "
 printf "%b\n" "$__desc" | fold -s
 
@@ -28,7 +23,7 @@ PKMGR=$(find_pkm apt apt-get aptitude dnf emerge eopkg pacman zypper)
 # ask to refresh repo
 printf "%b" "${Yellow}Do you want to refresh system repository? [y/n] ${Color_Off}"
 read -r REPLY
-if [[ $REPLY =~ ^[Yy]$ ]]; then
+if [[ "$REPLY" =~ ^[Yy]$ ]]; then
   if [ "$PKMGR" = "apt" ]; then
     apt update
   elif [ "$PKMGR" = "apt-get" ]; then
@@ -53,21 +48,21 @@ fi
 
 # install required packages
 if [ "$PKMGR" = "apt" ]; then
-  apt install -y torsocks coreutils sed gawk
+  apt install -y coreutils ufw
 elif [ "$PKMGR" = "apt-get" ]; then
-  apt-get install --no-install-recommends -y torsocks coreutils sed gawk
+  apt-get install --no-install-recommends -y coreutils ufw
 elif [ "$PKMGR" = "aptitude" ]; then
-  aptitude install --without-recommends -y torsocks coreutils sed gawk
+  aptitude install --without-recommends -y coreutils ufw
 elif [ "$PKMGR" = "dnf" ]; then
-  dnf install -y torsocks coreutils sed gawk
+  dnf install -y coreutils ufw
 elif [ "$PKMGR" = "emerge" ]; then
-  emerge torsocks coreutils sed gawk
+  emerge coreutils ufw
 elif [ "$PKMGR" = "eopkg" ]; then
-  eopkg install torsocks coreutils sed gawk
+  eopkg install coreutils ufw
 elif [ "$PKMGR" = "pacman" ]; then
-  pacman --noconfirm -S torsocks coreutils sed gawk
+  pacman --noconfirm -S coreutils ufw
 elif [ "$PKMGR" = "zypper" ]; then
-  zypper install -y torsocks coreutils sed gawk
+  zypper install -y coreutils ufw
 else
   printf "%b\n" "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
   exit 1
@@ -75,16 +70,14 @@ fi
 
 printf "\n"
 
-# enable torsocks port and cookies
-PATH_CONFIG="/etc/tor/torrc"
-sed -i 's:.*#ControlPort.*:ControlPort 9051:g' "$PATH_CONFIG"
-sed -i 's:.*#CookieAuthentication.*:CookieAuthentication 0:g' "$PATH_CONFIG"
-
 # enable services on boot
-systemctl enable --now tor.service
+systemctl enable --now ufw
 
 printf "\n"
 
-printf "%b\n" "${Yellow}>>>Usage: ${Red}torsocks wget ...; torsocks curl ...; torsocks apt install ...; ...etc${Color_Off}"
-printf "%b\n" "${Yellow}>>>Check Tor Status: ${Red}torsocks w3m 'https://check.torproject.org'${Color_Off}"
-printf "%b\n" "${Purple}You might need to check your firewall/iptables configurations.${Color_Off}"
+printf "%b\n" "${Yellow}Allow Common Firewall Rules for SSH (22), HTTP (80), HTTPS (443).${Color_Off}"
+ufw allow ssh
+ufw allow http
+ufw allow https
+ufw enable
+ufw status

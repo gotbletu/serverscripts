@@ -17,28 +17,39 @@ White='\e[0;37m'
 
 MAIN_DIR="$(pwd)"
 MAIN_MENU="
-  ${Green}1${Color_Off}   Setup OpenSSH (SSH Secure Shell) [21]
-  ${Green}1a${Color_Off}  -- Enable X11 Forwarding (Remote GUI Apps Over SSH)
-  ${Green}2${Color_Off}   Setup Samba (File Server)
-  ${Green}2a${Color_Off}  -- Add New Samba User
-  ${Green}3${Color_Off}   Setup Transmission (Bit Torrent) [9091]
+  ${Green}1${Color_Off}   Setup UFW (Uncomplicated Firewall)
+  ${Green}2${Color_Off}   Setup OpenSSH (SSH Secure Shell) [22]
+  ${Green}2a${Color_Off}  -- Enable X11 Forwarding (Remote GUI Apps Over SSH)
+  ${Green}2b${Color_Off}  -- Disable Password Authentication (Enable Passwordless Login First)
+  ${Green}2c${Color_Off}  Setup OpenSSH Passwordless Login
+  ${Green}3${Color_Off}   Setup Samba (File Server) [139,445]
+  ${Green}3a${Color_Off}  -- Add New Samba User
   ${Green}4${Color_Off}   Setup Kiwix (Offline Wikipedia) [49849]
   ${Green}5${Color_Off}   Setup Syncthing (File Syncing) [8384]
-  ${Green}6${Color_Off}   ${Cyan}Setup Syncthing (Desktop Only)${Color_Off}
-  ${Green}7${Color_Off}   Setup Ubooquity (Comic & Ebook Server)
-  ${Green}8${Color_Off}   Setup Torsocks (Access Tor Network via CLI)
+  ${Green}6${Color_Off}   Setup Syncthing ${Red}{@}${Color_Off} [8384]
+  ${Green}7${Color_Off}   Setup Ubooquity (Comic & Ebook Server) [2022,2203/admin]
+  ${Green}8${Color_Off}   Setup Torsocks (Access Tor Network via CLI) [9051]
+  ${Green}9${Color_Off}   Setup Transmission (Bit Torrent) [9091]
+  ${Green}0${Color_Off}   Setup Calibre (Ebook Management) ${Red}{^%}${Color_Off} [57770]
+  ${Green}0a${Color_Off}  -- Manage Calibre Users
   ${Green}i${Color_Off}   Show IP Address
   ${Green}r${Color_Off}   Refresh Repository
   ${Green}a${Color_Off}   About
   ${Green}q${Color_Off}   Quit
+
+  ^ = Requires X Session
+  % = No SSH, Physical Only
+  @ = Desktop Only, Not for Server
+
 "
+# ,${Green}6${Color_Off}, Setup ssh passwordless login (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Daily Snapshot (P2P File Syncing Server)
+# ,${Green}6${Color_Off}, Setup nginx reverse proxy (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup FTP (P2P File Syncing Server)
+# ,${Green}6${Color_Off}, Setup Fail2Ban (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Fgallery (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Flexget (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup NFS (P2P File Syncing Server)
-# ,${Green}6${Color_Off}, Setup Calibre (P2P File Syncing Server)
-# ,${Green}6${Color_Off}, Setup Ubooquity (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup TT-RSS (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Plex (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup miniDLNA (P2P File Syncing Server)
@@ -63,121 +74,153 @@ ABOUT="
 
   AUTHOR: gotbletu (gotbletu@gmail.com)
   SOCIAL: https://www.youtube.com/user/gotbletu
+          https://lbry.tv/@gotbletu
           https://github.com/gotbletu
           https://twitter.com/gotbletu
 "
 
 while true; do
-  clear
-  echo '======================= Server Scripts ==============================='
-  echo -e "$MAIN_MENU"
-  echo -ne "${Green}  >>> Please make your choice: ${Color_Off}"
+  printf "\033c"
+  printf "%s\n" '======================= Server Scripts ==============================='
+  printf "%b" "$MAIN_MENU"
+  printf "%b" "${Green}  >>> Please make your choice: ${Color_Off}"
   read -r INPUT
 
   case $INPUT in
-    1) # setup openssh
-      clear
+    1) # setup ufw firewall
+      printf "\033c"
       cd "$MAIN_DIR" || exit
-      cd automate_openssh && chmod +x install-openssh.sh && sudo ./install-openssh.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      cd automate_ufw && chmod +x install-ufw.sh && ./install-ufw.sh
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
-    1a) # enable X11 forwarding on openssh
-      clear
+    2) # setup openssh
+      printf "\033c"
       cd "$MAIN_DIR" || exit
-      cd automate_openssh && chmod +x enable-openssh-x11forwarding.sh && sudo ./enable-openssh-x11forwarding.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      cd automate_openssh && chmod +x install-openssh.sh && ./install-openssh.sh
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
-    2) # setup samba
-      clear
+    2a) # enable X11 forwarding on openssh
+      printf "\033c"
       cd "$MAIN_DIR" || exit
-      cd automate_samba && chmod +x install-samba.sh && sudo ./install-samba.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      cd automate_openssh && chmod +x enable-openssh-x11forwarding.sh && ./enable-openssh-x11forwarding.sh
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
-    2a) # add new samba user
-      clear
+    2b) # disble openssh password authentication
+      printf "\033c"
       cd "$MAIN_DIR" || exit
-      cd automate_samba && chmod +x addnew-sambauser.sh && sudo ./addnew-sambauser.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      cd automate_openssh && chmod +x disable-openssh-passwordauthentication.sh && ./disable-openssh-passwordauthentication.sh
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
-    3) # setup transmission
-      clear
+    2c) # openssh passwordless login
+      printf "\033c"
       cd "$MAIN_DIR" || exit
-      cd automate_transmission && chmod +x install-transmission.sh && sudo ./install-transmission.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      cd automate_sshpasswordless && chmod +x enable-sshpasswordless.sh && ./enable-sshpasswordless.sh
+      read -rsn1 -p "Press any key to return to main menu"
+    ;;
+    3) # setup samba
+      printf "\033c"
+      cd "$MAIN_DIR" || exit
+      cd automate_samba && chmod +x install-samba.sh && ./install-samba.sh
+      read -rsn1 -p "Press any key to return to main menu"
+    ;;
+    3a) # add new samba user
+      printf "\033c"
+      cd "$MAIN_DIR" || exit
+      cd automate_samba && chmod +x addnew-sambauser.sh && ./addnew-sambauser.sh
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
     4) # setup kiwix
-      clear
+      printf "\033c"
       cd "$MAIN_DIR" || exit
-      cd automate_kiwix && chmod +x install-kiwix.sh && sudo ./install-kiwix.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      cd automate_kiwix && chmod +x install-kiwix.sh && ./install-kiwix.sh
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
     5) # setup syncthing
-      clear
+      printf "\033c"
       cd "$MAIN_DIR" || exit
-      cd automate_syncthing && chmod +x install-syncthing-server.sh && sudo ./install-syncthing-server.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      cd automate_syncthing && chmod +x install-syncthing-server.sh && ./install-syncthing-server.sh
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
     6) # setup syncthing for desktop user only
-      clear
+      printf "\033c"
       cd "$MAIN_DIR" || exit
       cd automate_syncthing && chmod +x install-syncthing-desktop.sh && ./install-syncthing-desktop.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
     7) # setup ubooquity
-      clear
+      printf "\033c"
       cd "$MAIN_DIR" || exit
-      cd automate_ubooquity && chmod +x install-ubooquity.sh && sudo ./install-ubooquity.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      cd automate_ubooquity && chmod +x install-ubooquity.sh && ./install-ubooquity.sh
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
     8) # setup torsocks
-      clear
+      printf "\033c"
       cd "$MAIN_DIR" || exit
-      cd automate_torsocks && chmod +x install-torsocks.sh && sudo ./install-torsocks.sh
-      read -rsp $'Press any key to return to main menu\n' -n1
+      cd automate_torsocks && chmod +x install-torsocks.sh && ./install-torsocks.sh
+      read -rsn1 -p "Press any key to return to main menu"
+    ;;
+    9) # setup transmission
+      printf "\033c"
+      cd "$MAIN_DIR" || exit
+      cd automate_transmission && chmod +x install-transmission.sh && ./install-transmission.sh
+      read -rsn1 -p "Press any key to return to main menu"
+    ;;
+    0) # setup calibre
+      printf "\033c"
+      cd "$MAIN_DIR" || exit
+      cd automate_calibre && chmod +x install-calibre.sh && ./install-calibre.sh
+      read -rsn1 -p "Press any key to return to main menu"
+    ;;
+    0a) # manage users calibre
+      printf "\033c"
+      cd "$MAIN_DIR" || exit
+      cd automate_calibre && chmod +x manage-users-calibre.sh && ./manage-users-calibre.sh
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
     r|R) # refresh repo and install common depends
-      find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }
+      find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { printf "%s" "$i"; return 0;};done;return 1; }
       PKMGR=$(find_pkm apt apt-get aptitude dnf emerge eopkg pacman zypper)
       if [ "$PKMGR" = "apt" ]; then
-        apt update
+        sudo apt update
       elif [ "$PKMGR" = "apt-get" ]; then
-        apt-get update
+        sudo apt-get update
       elif [ "$PKMGR" = "aptitude" ]; then
-        aptitude update
+        sudo aptitude update
       elif [ "$PKMGR" = "dnf" ]; then
-        dnf check-update
+        sudo dnf check-update
       elif [ "$PKMGR" = "emerge" ]; then
-        emerge --sync
+        sudo emerge --sync
       elif [ "$PKMGR" = "eopkg" ]; then
-        eopkg update-repo
+        sudo eopkg update-repo
       elif [ "$PKMGR" = "pacman" ]; then
-        pacman -Syy
+        sudo pacman -Syy
       elif [ "$PKMGR" = "zypper" ]; then
-        zypper refresh
+        sudo zypper refresh
       fi
-      read -rsp $'Press any key to return to main menu\n' -n1
+      printf "\n"
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
-    i|I)
-      echo "  Username: $(whoami)"
-      echo "  Local IP: $(ip addr | awk '/global/ {print $1,$2}' | cut -d'/' -f1 | cut -d' ' -f2 | head -n 1)"
-      echo "  External IP: $(curl -s https://ifconfig.co/)"
-      echo
-      read -rsp $'  Press any key to return to main menu\n' -n1
+    i)
+      printf "%s\n" "  Username: $(whoami)"
+      printf "%s\n" "  Local IP: $(ip addr | awk '/global/ {print $1,$2}' | cut -d'/' -f1 | cut -d' ' -f2 | head -n 1)"
+      printf "%s\n" "  External IP: $(curl -s https://ifconfig.co/)"
+      printf "\n"
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
-    q|Q)
-      clear
+    q)
+      printf "\033c"
       exit 0
     ;;
-    \?|a|A)
-      clear
-      echo '============================ About ==================================='
-      echo -e "$ABOUT"
-      echo
-      read -rsp $'  Press any key to return to main menu\n' -n1
+    a)
+      printf "\033c"
+      printf "%s\n" '============================ About ==================================='
+      printf "%b" "$ABOUT"
+      printf "\n"
+      read -rsn1 -p "Press any key to return to main menu"
     ;;
     *)
-      clear
-      echo "Please choose again"
+      printf "\033c"
+      printf "%s" "Please choose again"
       sleep 2
     ;;
   esac

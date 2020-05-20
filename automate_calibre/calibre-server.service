@@ -1,0 +1,11 @@
+[Unit]
+Description=Calibre Content Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/calibre-server --port 57770 --userdb /srv/calibre/users.sqlite --enable-auth
+
+[Install]
+WantedBy=multi-user.target

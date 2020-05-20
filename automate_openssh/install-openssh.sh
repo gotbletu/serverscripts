@@ -4,21 +4,13 @@
 # DESC:   easy openssh server setup
 # DEMO:   https://youtu.be/fn8bDwfmM3c
 
-# check for sudo access
-if [ "$(id -u)" != "0" ]; then
-  echo "Sorry, you need to run this with sudo."
-  exit 1
-fi
+# requires root
+[ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
 
 Color_Off='\e[0m'
-Black='\e[0;30m'
 Red='\e[0;31m'
-Green='\e[0;32m'
 Yellow='\e[0;33m'
-Blue='\e[0;34m'
 Purple='\e[0;35m'
-Cyan='\e[0;36m'
-White='\e[0;37m'
 
 __desc="${Red}========== OpenSSH ==========${Color_Off}
 OpenSSH is the premier connectivity tool for remote login with the SSH protocol.
@@ -26,14 +18,14 @@ It encrypts all traffic to eliminate eavesdropping, connection hijacking, and ot
 In addition, OpenSSH provides a large suite of secure tunneling capabilities, several authentication methods, and sophisticated configuration options.
 https://www.openssh.com
 "
-echo -e "$__desc" | fold -s
+printf "%b\n" "$__desc" | fold -s
 
 # auto detect default package manager
-find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { echo "$i"; return 0;};done;return 1; }
+find_pkm() { for i;do command -v "$i" > /dev/null 2>&1 && { printf "%s" "$i"; return 0;};done;return 1; }
 PKMGR=$(find_pkm apt apt-get aptitude dnf emerge eopkg pacman zypper)
 
 # ask to refresh repo
-echo -ne "${Yellow}Do you want to refresh system repository? [y/n] ${Color_Off}"
+printf "%b" "${Yellow}Do you want to refresh system repository? [y/n] ${Color_Off}"
 read -r REPLY
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   if [ "$PKMGR" = "apt" ]; then
@@ -53,7 +45,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   elif [ "$PKMGR" = "zypper" ]; then
     zypper refresh
   else
-    echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
+    printf "%b\n" "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
     exit 1
   fi
 fi
@@ -76,17 +68,17 @@ elif [ "$PKMGR" = "pacman" ]; then
 elif [ "$PKMGR" = "zypper" ]; then
   zypper install -y openssh coreutils sed gawk
 else
-  echo -e "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
+  printf "%b\n" "${Red}Sorry your package manager is not supported. Exiting setup.${Color_Off}"
   exit 1
 fi
 
-echo
+printf "\n"
 
 # enable services on boot
 systemctl enable --now sshd.service
 
-echo
+printf "\n"
 
 MY_IP="$(ip addr | awk '/global/ {print $1,$2}' | cut -d'/' -f1 | cut -d' ' -f2 | head -n 1)"
-echo -e "${Yellow}>>>Usage: ${Red}ssh username@$MY_IP:22${Color_Off}"
-echo -e "${Purple}You might need to check your firewall/iptables configurations.${Color_Off}"
+printf "%b\n" "${Yellow}>>>Usage: ${Red}ssh username@$MY_IP:22${Color_Off}"
+printf "%b\n" "${Purple}You might need to check your firewall/iptables configurations.${Color_Off}"
