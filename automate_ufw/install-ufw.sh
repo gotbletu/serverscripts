@@ -6,9 +6,16 @@
 # requires root
 [ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
 
+# shellcheck disable SC2034
 Color_Off='\e[0m'
+Black='\e[0;30m'
 Red='\e[0;31m'
+Green='\e[0;32m'
 Yellow='\e[0;33m'
+Blue='\e[0;34m'
+Purple='\e[0;35m'
+Cyan='\e[0;36m'
+White='\e[0;37m'
 
 __desc="${Red}========== UFW Uncomplicated Firewall ==========${Color_Off}
 Uncomplicated Firewall (UFW) is a program for managing a netfilter firewall designed to be easy to use. It uses a command-line interface consisting of a small number of simple commands, and uses iptables for configuration.
@@ -75,9 +82,9 @@ systemctl enable --now ufw
 
 printf "\n"
 
-printf "%b\n" "${Yellow}Allow Common Firewall Rules for SSH (22), HTTP (80), HTTPS (443).${Color_Off}"
-ufw allow ssh
-ufw allow http
-ufw allow https
+printf "%b\n" "${Yellow}Allow Common Firewall Rules for SSH, HTTP, HTTPS.${Color_Off}"
+ufw allow ssh comment 'ssh'
+ufw allow http comment 'http'
+ufw allow https comment 'https'
 ufw enable
-ufw status
+ufw status verbose

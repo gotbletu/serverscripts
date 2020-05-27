@@ -32,6 +32,7 @@ MAIN_MENU="
   ${Green}9${Color_Off}   Setup Transmission (Bit Torrent) [9091]
   ${Green}0${Color_Off}   Setup Calibre (Ebook Management) ${Red}{^%}${Color_Off} [57770]
   ${Green}0a${Color_Off}  -- Manage Calibre Users
+  ${Green}11${Color_Off}  Setup Tiny Tiny RSS (RSS Reader) [3306]
   ${Green}i${Color_Off}   Show IP Address
   ${Green}r${Color_Off}   Refresh Repository
   ${Green}a${Color_Off}   About
@@ -42,15 +43,15 @@ MAIN_MENU="
   @ = Desktop Only, Not for Server
 
 "
-# ,${Green}6${Color_Off}, Setup ssh passwordless login (P2P File Syncing Server)
+# ,${Green}6${Color_Off}, Setup TT-RSS (P2P File Syncing Server)
+# ,${Green}6${Color_Off}, Setup Fail2Ban (P2P File Syncing Server)
+# ,${Green}6${Color_Off}, Setup miniflux rss (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Daily Snapshot (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup nginx reverse proxy (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup FTP (P2P File Syncing Server)
-# ,${Green}6${Color_Off}, Setup Fail2Ban (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Fgallery (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Flexget (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup NFS (P2P File Syncing Server)
-# ,${Green}6${Color_Off}, Setup TT-RSS (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Plex (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup miniDLNA (P2P File Syncing Server)
 # ,${Green}6${Color_Off}, Setup Emby (P2P File Syncing Server)
@@ -175,6 +176,12 @@ while true; do
       printf "\033c"
       cd "$MAIN_DIR" || exit
       cd automate_calibre && chmod +x manage-users-calibre.sh && ./manage-users-calibre.sh
+      read -rsn1 -p "Press any key to return to main menu"
+    ;;
+    11) # setup tiny tiny rss (tt-rss)
+      printf "\033c"
+      cd "$MAIN_DIR" || exit
+      cd automate_ttrss && chmod +x install-ttrss.sh && ./install-ttrss.sh
       read -rsn1 -p "Press any key to return to main menu"
     ;;
     r|R) # refresh repo and install common depends

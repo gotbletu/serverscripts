@@ -83,9 +83,9 @@ printf "%b\n" "${Green}create save directory (e.g /media/data/calibre, do not us
 printf "%b\n" "${Green}>>>Note<<< directory path will auto be created if path does not exist${Color_Off}"
 read -rep "Save Directory: " SAVEDIR
 SAVEDIR=$(printf "%s" "$SAVEDIR" | sed 's/\/*$//g') # remove trailing slashes in path
-mkdir -vp "$SAVEDIR"/library/EBook
+mkdir -vp "$SAVEDIR"/library/ebook
 # mkdir -vp "$SAVEDIR"/watchdir/{ebook,book,textbook,comic,dojinshi,legend,manga,super}
-mkdir -vp "$SAVEDIR"/watchdir/ebook
+mkdir -vp "$SAVEDIR"/watchdir/incoming_ebook
 chmod ugo+rw "$SAVEDIR/watchdir"
 printf "\n"
 
@@ -97,7 +97,7 @@ printf "\n"
 
 # GUI calibre wizard to setup default device and library location
 printf "%b\n" "${Yellow}GUI Calibre Wizard will ask for your default device (used for conversion format) ${Color_Off}"
-printf "%b\n" "${Yellow}and your default library, you can use existing one or use the default ($SAVEDIR/library/EBook) ${Color_Off}"
+printf "%b\n" "${Yellow}and your default library, you can use existing one or use the default ($SAVEDIR/library/ebook) ${Color_Off}"
 sleep 5
 calibre
 

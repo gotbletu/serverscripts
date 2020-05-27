@@ -144,13 +144,13 @@ printf "%b\n" "${Cyan}
 
 ${Color_Off}"
 
-printf "%b\n" "${Green}set save directory permission (e.g 777):${Color_Off}"
+printf "%b\n" "${Green}set save directory permission (e.g 774):${Color_Off}"
 printf "%b\n" "${Green}>>>Note<<< add users to ${Red}${GROUPNAME}${Green} group if you need${Color_Off}"
 read -rp "DIR Permission: " DIR_PERM
 chmod -R "$DIR_PERM" "$SAVEDIR"
 printf "\n"
 
-printf "%b\n" "${Green}set umask permission for incoming torrent creation (e.g 000):${Color_Off}"
+printf "%b\n" "${Green}set umask permission for incoming torrent creation (e.g 002):${Color_Off}"
 read -rp "UMASK Permission: " UMASK_PERM
 UMASK_PERM="$((8#$UMASK_PERM))"
 sed -i "s/MYUMASK_PERM/$UMASK_PERM/g" "$PATH_CONFIG"
@@ -164,6 +164,16 @@ printf "\n"
 
 printf "%b\n" "${Green}create password for the webui:${Color_Off}"
 read -rsp "New password: " PASSWORD
+printf "\n"
+read -rsp "Retype new password: " PASSWORD_RETYPE
+printf "\n"
+while [[ "$PASSWORD" != "$PASSWORD_RETYPE" ]]; do
+  printf "%b\n" "${Red}try again, password did not match${Color_Off}"
+  read -rsp "New password: " PASSWORD
+  printf "\n"
+  read -rsp "Retype new password: " PASSWORD_RETYPE
+  printf "\n"
+done
 sed -i "s/MYPASSWORD/$PASSWORD/g" "$PATH_CONFIG"
 printf "\n"
 
